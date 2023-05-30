@@ -19,7 +19,7 @@ const handlePostGrade = async (request) => {
   const programmingAssignments = await programmingAssignmentService.findAll();
 
   const requestData = await request.json();
-  const testCode = programmingAssignments[0]["test_code"];
+  const testCode = programmingAssignments[requestData.assignmentNumber-1]["test_code"];
   const data = {
     testCode: testCode,
     code: requestData.code,

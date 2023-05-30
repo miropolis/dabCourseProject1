@@ -14,6 +14,6 @@ const assignmentNumber = parseInt(assignment.slice(-1))
 ---
 <Layout>
     <ProgrammingAssignment assignmentID={assignmentNumber} client:load />
-    <GradingButton client:only={"svelte"} />
+    <GradingButton assignmentID={assignmentNumber} client:only={"svelte"} />
   </Layout>
   
