@@ -21,6 +21,10 @@
     console.log(jsonData);
     alert(JSON.stringify(jsonData));
   };
+
+  const getGrading = async () => {
+    
+  }
 </script>
 
 <button

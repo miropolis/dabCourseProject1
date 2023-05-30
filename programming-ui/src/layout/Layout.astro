@@ -15,11 +15,11 @@ import Sidebar from "./Sidebar.svelte";
     <Header client:only={"svelte"} />
     <div class=""> {/*removed mx-auto*/}
       <div class="flex flex-row">
-        <div class="bg-red-300 basis-1/6">
+        <div class="bg-gray-50 basis-1/6">
           <!-- This is the sidebar! -->
           <Sidebar />
         </div>
-        <div class="bg-green-200 basis-5/6 pl-20">
+        <div class="basis-5/6 pl-20 pr-20 mr-40">
           <!-- This is the main page! -->
           <slot />
         </div>
