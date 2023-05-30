@@ -1,0 +1,19 @@
+---
+import Layout from "../layout/Layout.astro";
+import GradingButton from "../components/GradingButton.svelte";
+import ProgrammingAssignment from "../components/ProgrammingAssignment.svelte";
+export function getStaticPaths() {
+  return [
+    {params: {assignment: 'assignment-2'}},
+    {params: {assignment: 'assignment-3'}},
+  ];
+}
+
+const { assignment } = Astro.params;
+const assignmentNumber = parseInt(assignment.slice(-1))
+---
+<Layout>
+    <ProgrammingAssignment assignmentID={assignmentNumber} client:load />
+    <GradingButton client:only={"svelte"} />
+  </Layout>
+  

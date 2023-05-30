@@ -1,4 +1,5 @@
 <script>
+    export let assignmentID = 1;
     const getAssignments = async () => {
         const response = await fetch("/api/assignments");
         return await response.json();
@@ -9,16 +10,14 @@
 
 
 {#await assignmentsPromise}
-<p>Loading Programming Assignments</p>
+<p>Loading Programming Assignment</p>
 {:then assignments}
 {#if assignments.length == 0}
     <p>No programming assignments available</p>
 {:else}
-    {#each assignments as assignment}
-        <p>Assignment title: {assignment.title}</p>
-        <p>Assignment number: {assignment.assignment_order}</p>
-        <p>Handout: {assignment.handout}</p>
-        <p>Test code: {assignment.test_code}</p>
-    {/each}
+    <p>{assignments[assignmentID-1].title}</p>
+    <p>{assignments[assignmentID-1].assignment_order}</p>
+    <p>{assignments[assignmentID-1].handout}</p>
+    <p>{assignments[assignmentID-1].test_code}</p>
 {/if}
 {/await}

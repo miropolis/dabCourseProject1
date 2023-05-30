@@ -1,6 +1,5 @@
+<!-- TODO: Make sidebar dynamic -->
 <p>Test Sidebar Content</p>
-<p>Assignment 1</p>
-<p>Assignment 2</p>
-<p>Assignment 3</p>
-<p>Assignment 4</p>
-<p>Assignment 5</p>
+<p><a href="/">Assignment 1</a></p>
+<p><a href="/assignment-2/">Assignment 2</a></p>
+<p><a href="/assignment-3/">Assignment 3</a></p>

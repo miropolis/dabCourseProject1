@@ -3,5 +3,8 @@
 </script>
 
 <nav class="p-4 mb-4 shadow">
-  <span class="text-2xl text-gray-700 font-serif">Hello {$userUuid}!</span>
+  <div class="flow-root">
+    <span class="text-4xl text-gray-700 font-sans mb-2 float-left">Programming Assignments Website</span>
+    <span class="font-sans text-s float-right">{$userUuid}</span>
+  </div>
 </nav>
