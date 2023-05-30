@@ -11,6 +11,14 @@
     code: userCode,
     };
 
+    const responseThrowAway = await fetch("/api/submissions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
     const response = await fetch("/api/grade", {
       method: "POST",
       headers: {

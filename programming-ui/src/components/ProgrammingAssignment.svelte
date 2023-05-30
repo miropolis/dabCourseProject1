@@ -4,7 +4,6 @@
         const response = await fetch("/api/assignments");
         return await response.json();
     };
-
     let assignmentsPromise = getAssignments();
 </script>
 

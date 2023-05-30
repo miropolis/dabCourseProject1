@@ -2,11 +2,13 @@
 import Layout from "../layout/Layout.astro";
 import GradingButton from "../components/GradingButton.svelte";
 import ProgrammingAssignment from "../components/ProgrammingAssignment.svelte";
+import ProgrammingSubmissions from "../components/ProgrammingSubmissions.svelte";
 ---
 
 <Layout>
 
   <ProgrammingAssignment client:load />
   <GradingButton client:only={"svelte"} />
+  <ProgrammingSubmissions client:load />
 
 </Layout>
