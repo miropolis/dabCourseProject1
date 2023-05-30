@@ -1,4 +1,5 @@
 import * as programmingAssignmentService from "./services/programmingAssignmentService.js";
+import * as programmingSubmissionsService from "./services/programmingSubmissionsService.js";
 import { serve } from "./deps.js";
 import { sql } from "./database/database.js";
 
@@ -36,6 +37,16 @@ const handlePostGrade = async (request) => {
   return response;
 };
 
+const handleGetSubmission = async (request, urlPatternResult) => {
+  const id = urlPatternResult.pathname.groups.id;
+  return Response.json(await programmingSubmissionsService.findByUuid(id));
+};
+
+const handlePostSubmission = async (request) => {
+  const submission = await request.json();
+  return Response.json(await programmingSubmissionsService.writeAssignment(submission.assignmentNumber, submission.code, submission.user));
+}
+
 const urlMapping = [
   {
     method: "GET",
@@ -56,6 +67,16 @@ const urlMapping = [
     method: "POST",
     pattern: new URLPattern({ pathname: "/grade" }),
     fn: handlePostGrade,
+  },
+  {
+    method: "GET",
+    pattern: new URLPattern({ pathname: "/submissions/:id" }),
+    fn: handleGetSubmission,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/submissions" }),
+    fn: handlePostSubmission,
   },
 ];
 
