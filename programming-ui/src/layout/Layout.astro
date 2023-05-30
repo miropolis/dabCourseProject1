@@ -1,5 +1,6 @@
 ---
 import Header from "./Header.svelte";
+import Sidebar from "./Sidebar.svelte";
 ---
 
 <html lang="en">
@@ -12,8 +13,17 @@ import Header from "./Header.svelte";
   </head>
   <body>
     <Header client:only={"svelte"} />
-    <div class="container mx-auto">
-      <slot />
+    <div class=""> {/*removed mx-auto*/}
+      <div class="flex flex-row">
+        <div class="bg-red-300 basis-1/6">
+          <!-- This is the sidebar! -->
+          <Sidebar />
+        </div>
+        <div class="bg-green-200 basis-5/6 pl-2">
+          <!-- This is the main page! -->
+          <slot />
+        </div>
+      </div>
     </div>
   </body>
 </html>
