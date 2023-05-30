@@ -10,6 +10,11 @@ const handleGetTest = async (request) => {
   return new Response("Test message");
 };
 
+const handleGetAssignments = async (request) => {
+  const programmingAssignments = await programmingAssignmentService.findAll();
+  return Response.json(programmingAssignments);
+};
+
 const handlePostGrade = async (request) => {
   const programmingAssignments = await programmingAssignmentService.findAll();
 
@@ -36,6 +41,11 @@ const urlMapping = [
     method: "GET",
     pattern: new URLPattern({ pathname: "/test" }),
     fn: handleGetTest,
+  },
+  {
+    method: "GET",
+    pattern: new URLPattern({ pathname: "/assignments" }),
+    fn: handleGetAssignments,
   },
   {
     method: "GET",
