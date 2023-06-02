@@ -4,6 +4,7 @@
   let userCode = "";
   let submissionSuccessful = false;
   let submissionEvent = false;
+  let jsonData;
   
   const submitAssignmentCode = async () => {
 
@@ -13,6 +14,7 @@
     code: userCode,
     };
 
+    //TODO combine two api calls in one
     const responseThrowAway = await fetch("/api/submissions", {
       method: "POST",
       headers: {
@@ -29,11 +31,27 @@
       body: JSON.stringify(data),
     });
 
-    const jsonData = await response.json();
+    jsonData = await response.json();
     console.log(jsonData);
-    alert(JSON.stringify(jsonData));
-    //submissionSuccessful = true;
-    //TODO study grader api to see if succesful and adjust return
+    //alert(JSON.stringify(jsonData));
+    // TODO implement 4 cases
+    // Tests are run and they pass (i.e. grading is successful)
+    // Tests are run and they fail (i.e. grading failed)
+    // Tests cannot be run due to a syntax error (i.e. syntax error in code)
+    // Tests time out and no output is given (i.e. there's an infinite loop in code or tests)
+    console.log(jsonData.result.slice(-2))
+    if (jsonData.result.slice(-2) === "OK") {
+      submissionSuccessful = true;
+    } else if (jsonData.result.slice(-6) === "syntax") {
+      submissionSuccessful = false;
+      console.log("Syntax Error!");
+    } else if (jsonData.result.slice(-2) === "") {
+      submissionSuccessful = false;
+      console.log("Time out error!");
+    } else {
+      submissionSuccessful = false;
+      console.log("Test runs but fails!");
+    }
     submissionEvent = true;
   };
 
@@ -58,5 +76,10 @@
   <div class="bg-red-500">
     <p>Your submission was not succesful!</p>
     <p>to be error</p>
+    {#await jsonData}
+      <p>Awaiting data...</p>
+      {:then jsonResponse}
+      {JSON.stringify(jsonResponse)}
+    {/await}
   </div>
 {/if}
