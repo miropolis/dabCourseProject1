@@ -16,9 +16,30 @@
         return await response.json();
     }
 
+    const performRedisTests = async () => {
+        const data = {
+        method: "Add to stream",
+        parameter: "test-message-2",
+        };
+
+        await fetch("/api/redis", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+    };
+
     let submissionsPromise = getSubmissions();
 </script>
 
+<button
+  class="bg-gray-600 hover:bg-gray-900 text-white font-bold p-4 m-4"
+  on:click={performRedisTests}
+>
+  Perform redis tests!
+</button>
 
 {#await submissionsPromise}
 <p>Loading Programming Submissions</p>
