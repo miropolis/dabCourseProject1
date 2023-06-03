@@ -17,11 +17,26 @@ const handleGetAssignments = async (request) => {
 };
 
 const handlePostGrade = async (request) => {
+  let errorType = "Error type placeholder";
   const submission = await request.json();
-  await programmingSubmissionsService.writeAssignment(submission.assignmentNumber, submission.code, submission.user)
+  const oldUserSubmissions = await programmingSubmissionsService.findByUuidAndAssignmentID(submission.user, submission.assignmentNumber);
+
+  for (let i = 0; i < oldUserSubmissions.length; i++) {
+    if (oldUserSubmissions[i].code === submission.code) {
+      console.log("Same assignment found!");
+      const feedbackData = {
+        correct: oldUserSubmissions[i].correct,
+        errorType: evaluateGraderFeedback(oldUserSubmissions[i].grader_feedback)[1],
+        graderFeedback: oldUserSubmissions[i].grader_feedback,
+      };
+      return Response.json(feedbackData);
+    };
+  };
+
+  //put this statement before the for block to write all submissions (even duplicates) to database
+  await programmingSubmissionsService.writeSubmission(submission.assignmentNumber, submission.code, submission.user);
 
   const programmingAssignments = await programmingAssignmentService.findAll();
-
   const testCode = programmingAssignments[submission.assignmentNumber-1]["test_code"];
   const data = {
     testCode: testCode,
@@ -35,9 +50,24 @@ const handlePostGrade = async (request) => {
     },
     body: JSON.stringify(data),
   });
+  const responseJSON = await response.json();
+  const evaluatedGraderFeedback = evaluateGraderFeedback(responseJSON.result);
 
-  return response;
+  await programmingSubmissionsService.gradeSubmission(submission.assignmentNumber, submission.code, submission.user, "processed", responseJSON.result, evaluatedGraderFeedback[0]);
+  console.log("just sent another grading request")
+   const feedbackData = {
+    correct: evaluatedGraderFeedback[0],
+    errorType: evaluatedGraderFeedback[1],
+    graderFeedback: responseJSON.result,
+  };
+  
+  return Response.json(feedbackData);
 };
+
+const handlePostSubmissions = async (request) => {
+  const searchParams = await request.json();
+  return await programmingSubmissionsService.findByUuidAndAssignmentID(searchParams.user, searchParams.assignmentNumber);
+}
 
 const handleGetSubmission = async (request, urlPatternResult) => {
   const id = urlPatternResult.pathname.groups.id;
@@ -70,6 +100,11 @@ const urlMapping = [
     pattern: new URLPattern({ pathname: "/submissions/:id" }),
     fn: handleGetSubmission,
   },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/submissions" }),
+    fn: handlePostSubmissions,
+  },
 ];
 
 const handleRequest = async (request) => {
@@ -89,3 +124,20 @@ const handleRequest = async (request) => {
 
 const portConfig = { port: 7777, hostname: "0.0.0.0" };
 serve(handleRequest, portConfig);
+
+const evaluateGraderFeedback = (graderFeedback) => {
+  let submissionCorrect = false;
+  let errorType = "";
+  if (graderFeedback.slice(-2) === "OK") {
+    submissionCorrect = true;
+  } else if (graderFeedback.slice(-6) === "syntax") {
+    errorType = "Syntax Error!";
+  } else if (graderFeedback.includes("NameError")) {
+    errorType = "Syntax Error!";
+  } else if (graderFeedback.slice(-2) === "") {
+    errorType = "Time out error!";
+  } else {
+    errorType = "Test runs but fails!";
+  }
+  return [submissionCorrect, errorType]
+}

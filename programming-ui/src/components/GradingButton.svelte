@@ -5,7 +5,6 @@
   let submissionSuccessful = false;
   let submissionEvent = false;
   let jsonData;
-  let errorText;
   
   const submitAssignmentCode = async () => {
 
@@ -14,7 +13,7 @@
     assignmentNumber: assignmentID,
     code: userCode,
     };
-
+    
     const response = await fetch("/api/grade", {
       method: "POST",
       headers: {
@@ -22,31 +21,14 @@
       },
       body: JSON.stringify(data),
     });
-
     jsonData = await response.json();
-    console.log(jsonData);
-    // Tests are run and they pass (i.e. grading is successful)
-    // Tests are run and they fail (i.e. grading failed)
-    // Tests cannot be run due to a syntax error (i.e. syntax error in code)
-    // Tests time out and no output is given (i.e. there's an infinite loop in code or tests)
-    console.log(jsonData.result.slice(-2))
-    if (jsonData.result.slice(-2) === "OK") {
-      submissionSuccessful = true;
-    } else if (jsonData.result.slice(-6) === "syntax") {
-      submissionSuccessful = false;
-      errorText = "Syntax Error!";
-    } else if (jsonData.result.slice(-2) === "") {
-      submissionSuccessful = false;
-      errorText = "Time out error!";
-    } else {
-      submissionSuccessful = false;
-      errorText = "Test runs but fails!";
-    }
+    console.log(jsonData)
+    submissionSuccessful = jsonData.correct;
     submissionEvent = true;
   };
 
   const getGrading = async () => {
-    
+
   }
 </script>
 <textarea bind:value={userCode} class="w-full bg-gray-900 text-white font-mono p-2.5 h-48 border-4 border-black focus:border-4 focus:border-blue-500" placeholder="Write your Python code here..."></textarea>
@@ -63,13 +45,13 @@
   </div>
 {/if}
 {#if submissionSuccessful == false && submissionEvent}
-  <div class="bg-red-500">
+  <div class="bg-red-500 p-2">
     <p>Your submission was not succesful!</p>
-    <p>{errorText}</p>
     {#await jsonData}
       <p>Awaiting data...</p>
       {:then jsonResponse}
-      {JSON.stringify(jsonResponse)}
+      <p class="pb-2">Error Type: {jsonResponse.errorType}</p>
+      <p class="bg-gray-900 text-white p-2 font-mono">{jsonResponse.graderFeedback}</p>
     {/await}
   </div>
 {/if}
