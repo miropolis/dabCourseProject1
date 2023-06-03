@@ -2,12 +2,6 @@
     export let assignmentID = 1;
     import { userUuid } from "../stores/stores.js";
     const getSubmissions = async () => {
-        //TODO rework this as post request which sends both UUID and assignmentID
-        /*const pathGetSubmissions = "/api/submissions/" + $userUuid;
-        console.log(pathGetSubmissions);
-        const response = await fetch(pathGetSubmissions);
-        return await response.json();*/
-
         const data = {
         user: $userUuid,
         assignmentNumber: assignmentID,
@@ -21,7 +15,6 @@
         });
         return await response.json();
     }
-    
 
     let submissionsPromise = getSubmissions();
 </script>
