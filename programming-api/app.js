@@ -130,9 +130,7 @@ const evaluateGraderFeedback = (graderFeedback) => {
   let errorType = "";
   if (graderFeedback.slice(-2) === "OK") {
     submissionCorrect = true;
-  } else if (graderFeedback.slice(-6) === "syntax") {
-    errorType = "Syntax Error!";
-  } else if (graderFeedback.includes("NameError")) {
+  } else if (graderFeedback.slice(-6) === "syntax" || graderFeedback.includes("NameError") || graderFeedback.includes("SyntaxError")) {
     errorType = "Syntax Error!";
   } else if (graderFeedback.slice(-2) === "") {
     errorType = "Time out error!";
