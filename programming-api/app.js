@@ -17,7 +17,6 @@ const handleGetAssignments = async (request) => {
 };
 
 const handlePostGrade = async (request) => {
-  let errorType = "Error type placeholder";
   const submission = await request.json();
   const oldUserSubmissions = await programmingSubmissionsService.findByUuidAndAssignmentID(submission.user, submission.assignmentNumber);
 
