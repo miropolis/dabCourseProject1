@@ -1,7 +1,12 @@
 import * as programmingAssignmentService from "./services/programmingAssignmentService.js";
 import * as programmingSubmissionsService from "./services/programmingSubmissionsService.js";
 import { serve } from "./deps.js";
-import { sql } from "./database/database.js";
+import { connect } from "./deps.js";
+
+const redis = await connect({
+  hostname: "redis",
+  port: 6379,
+});
 
 const handleGetRoot = async (request) => {
   return new Response(`Hello from ...`); //show user uuid?
