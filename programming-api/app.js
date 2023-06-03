@@ -69,6 +69,11 @@ const handlePostSubmissions = async (request) => {
   return Response.json(await programmingSubmissionsService.findByUuidAndAssignmentID(searchParams.user, searchParams.assignmentNumber));
 }
 
+const handlePostSubmissionsPending = async (request) => {
+  const searchParams = await request.json();
+  return Response.json(await programmingSubmissionsService.findByUuidAndPending(searchParams.user));
+};
+
 const urlMapping = [
   {
     method: "GET",
@@ -95,6 +100,11 @@ const urlMapping = [
     pattern: new URLPattern({ pathname: "/submissions" }),
     fn: handlePostSubmissions,
   },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/submissions-pending" }),
+    fn: handlePostSubmissionsPending,
+  }
 ];
 
 const handleRequest = async (request) => {

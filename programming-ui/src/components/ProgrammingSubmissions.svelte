@@ -12,7 +12,6 @@
         user: $userUuid,
         assignmentNumber: assignmentID,
         };
-        console.log("Data from ProgrammingSubmissions: ", data);
         const response = await fetch("/api/submissions", {
             method: "POST",
             headers: {

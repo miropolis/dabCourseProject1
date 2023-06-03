@@ -7,11 +7,24 @@
   let jsonData;
   
   const submitAssignmentCode = async () => {
-
     const data = {
     user: $userUuid,
     assignmentNumber: assignmentID,
     code: userCode,
+    };
+
+    // check if user has pending submissions. Tried integrating this into the grading API endpoint but timing did not work
+    const responsePendingSubmissions = await fetch("/api/submissions-pending", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const responsePendingSubmissionsJSON = await responsePendingSubmissions.json();
+    if (responsePendingSubmissionsJSON.length > 0) {
+      alert("Please wait until your last submission has been processed by the grader");
+      return;
     };
     
     const response = await fetch("/api/grade", {
