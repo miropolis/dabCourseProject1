@@ -46,7 +46,7 @@
   };
 
   const getGrading = async () => {
-
+    
   }
 </script>
 <textarea bind:value={userCode} class="w-full bg-gray-900 text-white font-mono p-2.5 h-48 border-4 border-black focus:border-4 focus:border-blue-500" placeholder="Write your Python code here..."></textarea>
@@ -59,7 +59,7 @@
 {#if submissionSuccessful && submissionEvent}
   <div class="bg-green-600">
     <p>Your submission was successful!</p>
-    <p><a href="/assignment-2/">Go to the next assignment</a></p>
+    <p><a href="/assignment-{assignmentID+1}/">Go to the next assignment</a></p>
   </div>
 {/if}
 {#if submissionSuccessful == false && submissionEvent}
