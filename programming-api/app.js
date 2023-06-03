@@ -17,13 +17,15 @@ const handleGetAssignments = async (request) => {
 };
 
 const handlePostGrade = async (request) => {
+  const submission = await request.json();
+  await programmingSubmissionsService.writeAssignment(submission.assignmentNumber, submission.code, submission.user)
+
   const programmingAssignments = await programmingAssignmentService.findAll();
 
-  const requestData = await request.json();
-  const testCode = programmingAssignments[requestData.assignmentNumber-1]["test_code"];
+  const testCode = programmingAssignments[submission.assignmentNumber-1]["test_code"];
   const data = {
     testCode: testCode,
-    code: requestData.code,
+    code: submission.code,
   };
 
   const response = await fetch("http://grader-api:7000/", {
@@ -41,11 +43,6 @@ const handleGetSubmission = async (request, urlPatternResult) => {
   const id = urlPatternResult.pathname.groups.id;
   return Response.json(await programmingSubmissionsService.findByUuid(id));
 };
-
-const handlePostSubmission = async (request) => {
-  const submission = await request.json();
-  return Response.json(await programmingSubmissionsService.writeAssignment(submission.assignmentNumber, submission.code, submission.user));
-}
 
 const urlMapping = [
   {
@@ -72,11 +69,6 @@ const urlMapping = [
     method: "GET",
     pattern: new URLPattern({ pathname: "/submissions/:id" }),
     fn: handleGetSubmission,
-  },
-  {
-    method: "POST",
-    pattern: new URLPattern({ pathname: "/submissions" }),
-    fn: handlePostSubmission,
   },
 ];
 
