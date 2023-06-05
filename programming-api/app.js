@@ -66,13 +66,9 @@ const handlePostGrade = async (request) => {
 
 const handlePostSubmissions = async (request) => {
   const searchParams = await request.json();
-  return await programmingSubmissionsService.findByUuidAndAssignmentID(searchParams.user, searchParams.assignmentNumber);
+  console.log("handlePostSubmissions called with params: ", searchParams)
+  return Response.json(await programmingSubmissionsService.findByUuidAndAssignmentID(searchParams.user, searchParams.assignmentNumber));
 }
-
-const handleGetSubmission = async (request, urlPatternResult) => {
-  const id = urlPatternResult.pathname.groups.id;
-  return Response.json(await programmingSubmissionsService.findByUuid(id));
-};
 
 const urlMapping = [
   {
@@ -94,11 +90,6 @@ const urlMapping = [
     method: "POST",
     pattern: new URLPattern({ pathname: "/grade" }),
     fn: handlePostGrade,
-  },
-  {
-    method: "GET",
-    pattern: new URLPattern({ pathname: "/submissions/:id" }),
-    fn: handleGetSubmission,
   },
   {
     method: "POST",

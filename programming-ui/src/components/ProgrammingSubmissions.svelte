@@ -1,12 +1,29 @@
 <script>
+    export let assignmentID = 1;
     import { userUuid } from "../stores/stores.js";
     const getSubmissions = async () => {
         //TODO rework this as post request which sends both UUID and assignmentID
-        const pathGetSubmissions = "/api/submissions/" + $userUuid;
+        /*const pathGetSubmissions = "/api/submissions/" + $userUuid;
         console.log(pathGetSubmissions);
         const response = await fetch(pathGetSubmissions);
+        return await response.json();*/
+
+        const data = {
+        user: $userUuid,
+        assignmentNumber: assignmentID,
+        };
+        console.log("Data from ProgrammingSubmissions: ", data);
+        const response = await fetch("/api/submissions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
         return await response.json();
     }
+    
+
     let submissionsPromise = getSubmissions();
 </script>
 
