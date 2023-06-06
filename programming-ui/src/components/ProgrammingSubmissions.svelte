@@ -1,13 +1,8 @@
 <script>
     export let assignmentID = 1;
     import { userUuid } from "../stores/stores.js";
+    let i = 1;
     const getSubmissions = async () => {
-        //TODO rework this as post request which sends both UUID and assignmentID
-        /*const pathGetSubmissions = "/api/submissions/" + $userUuid;
-        console.log(pathGetSubmissions);
-        const response = await fetch(pathGetSubmissions);
-        return await response.json();*/
-
         const data = {
         user: $userUuid,
         assignmentNumber: assignmentID,
@@ -21,11 +16,33 @@
         });
         return await response.json();
     }
-    
+
+    const performRedisTests = async () => {
+        const data = {
+        method: "Add to stream",
+        parameter: i,
+        };
+        i++;
+        i++;
+
+        await fetch("/api/redis", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+    };
 
     let submissionsPromise = getSubmissions();
 </script>
 
+<button
+  class="bg-gray-600 hover:bg-gray-900 text-white font-bold p-4 m-4"
+  on:click={performRedisTests}
+>
+  Perform redis tests!
+</button>
 
 {#await submissionsPromise}
 <p>Loading Programming Submissions</p>
