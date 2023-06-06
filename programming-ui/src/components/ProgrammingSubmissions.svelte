@@ -1,6 +1,7 @@
 <script>
     export let assignmentID = 1;
     import { userUuid } from "../stores/stores.js";
+    let i = 1;
     const getSubmissions = async () => {
         const data = {
         user: $userUuid,
@@ -19,8 +20,10 @@
     const performRedisTests = async () => {
         const data = {
         method: "Add to stream",
-        parameter: "test-message-2",
+        parameter: i,
         };
+        i++;
+        i++;
 
         await fetch("/api/redis", {
             method: "POST",
