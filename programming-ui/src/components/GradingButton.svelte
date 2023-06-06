@@ -14,7 +14,7 @@
     };
 
     // check if user has pending submissions. Tried integrating this into the grading API endpoint but timing did not work
-    const responsePendingSubmissions = await fetch("/api/submissions-pending", {
+    /*const responsePendingSubmissions = await fetch("/api/submissions-pending", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -25,7 +25,7 @@
     if (responsePendingSubmissionsJSON.length > 0) {
       alert("Please wait until your last submission has been processed by the grader");
       return;
-    };
+    };*/
     
     const response = await fetch("/api/grade", {
       method: "POST",

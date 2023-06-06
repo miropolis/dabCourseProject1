@@ -8,7 +8,7 @@ const redis = await connect({
   port: 6379,
 });
 
-// Create Redis Consumer Group and stream on startup
+// Create Redis Consumer Group and stream on startup (only if it does not exist yet!)
 await redis.xgroupCreate(
   "grading-stream",
   "Redis-Grader-Group",
@@ -17,11 +17,7 @@ await redis.xgroupCreate(
 );
 
 const handleGetRoot = async (request) => {
-  return new Response(`Hello from ...`); //show user uuid?
-};
-
-const handleGetTest = async (request) => {
-  return new Response("Test message");
+  return new Response(`Hello from ...`);
 };
 
 const handleGetAssignments = async (request) => {
@@ -65,7 +61,7 @@ const handlePostGrade = async (request) => {
     { user: submission.user, assignmentNumber: submission.assignmentNumber, code: submission.code, testCode: testCode },
   );
 
-  const response = await fetch("http://grader-api:7000/", {
+  /*const response = await fetch("http://grader-api:7000/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -76,11 +72,11 @@ const handlePostGrade = async (request) => {
   const evaluatedGraderFeedback = evaluateGraderFeedback(responseJSON.result);
 
   await programmingSubmissionsService.gradeSubmission(submission.assignmentNumber, submission.code, submission.user, "processed", responseJSON.result, evaluatedGraderFeedback[0]);
-  console.log("just sent another grading request")
-   const feedbackData = {
-    correct: evaluatedGraderFeedback[0],
-    errorType: evaluatedGraderFeedback[1],
-    graderFeedback: responseJSON.result,
+  */
+  const feedbackData = {
+    correct: false,
+    errorType: "Placeholder error type",
+    graderFeedback: "Placeholder graderFeedback",
   };
   
   return Response.json(feedbackData);
@@ -95,6 +91,16 @@ const handlePostSubmissions = async (request) => {
 const handlePostSubmissionsPending = async (request) => {
   const searchParams = await request.json();
   return Response.json(await programmingSubmissionsService.findByUuidAndPending(searchParams.user));
+};
+
+const handlePostSubmissionUpdate = async (request) => {
+  const updatedSubmission = await request.json();
+  const evaluatedGraderFeedback = evaluateGraderFeedback(updatedSubmission.graderFeedback);
+  programmingSubmissionsService.gradeSubmission(updatedSubmission.assignmentNumber, updatedSubmission.code, updatedSubmission.user, "processed", updatedSubmission.graderFeedback, evaluatedGraderFeedback[0]);
+  const data = {
+    feedback: "returned successfully",
+  };
+  return Response.json(data);
 };
 
 const handlePostRedis = async (request) => {
@@ -163,11 +169,6 @@ const handlePostRedis = async (request) => {
 const urlMapping = [
   {
     method: "GET",
-    pattern: new URLPattern({ pathname: "/test" }),
-    fn: handleGetTest,
-  },
-  {
-    method: "GET",
     pattern: new URLPattern({ pathname: "/assignments" }),
     fn: handleGetAssignments,
   },
@@ -190,6 +191,11 @@ const urlMapping = [
     method: "POST",
     pattern: new URLPattern({ pathname: "/submissions-pending" }),
     fn: handlePostSubmissionsPending,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/submission-update" }),
+    fn: handlePostSubmissionUpdate,
   },
   {
     method: "POST",
