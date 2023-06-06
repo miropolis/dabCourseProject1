@@ -79,6 +79,12 @@ const handlePostSubmissionsPending = async (request) => {
   return Response.json(await programmingSubmissionsService.findByUuidAndPending(searchParams.user));
 };
 
+const handlePostRedis = async (request) => {
+  const searchParams = await request.json();
+  console.log("test Redis parameters: ", searchParams)
+  return new Response("Test message");
+};
+
 const urlMapping = [
   {
     method: "GET",
@@ -109,6 +115,11 @@ const urlMapping = [
     method: "POST",
     pattern: new URLPattern({ pathname: "/submissions-pending" }),
     fn: handlePostSubmissionsPending,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/redis" }),
+    fn: handlePostRedis,
   }
 ];
 
