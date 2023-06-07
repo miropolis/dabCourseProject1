@@ -8,13 +8,19 @@ const redis = await connect({
   port: 6379,
 });
 
-// Create Redis Consumer Group and stream on startup (only if it does not exist yet!)
-await redis.xgroupCreate(
-  "grading-stream",
-  "Redis-Grader-Group",
-  0, //what message to serve next at the first consumer connecting, that is, what was the last message ID when the group was just created. If we provide $ as we did, then only new messages arriving in the stream from now on will be provided to the consumers in the group. If we specify 0 instead the consumer group will consume all the messages in the stream history to start with. 
-  true, //mkstream true, creates the stream if it doesn't exist
-);
+// Create Redis Consumer Group and stream on startup (if it doesn't exist yet)
+try {
+  const redisInfo = await redis.xinfoGroups("grading-stream");
+  console.log(redisInfo[0].name);
+} catch (e) {
+  console.log("Looks like grading-stream does not exist yet. Creating it and the consumer group now...");
+  await redis.xgroupCreate(
+    "grading-stream",
+    "Redis-Grader-Group",
+    0, //what message to serve next at the first consumer connecting, that is, what was the last message ID when the group was just created. If we provide $ as we did, then only new messages arriving in the stream from now on will be provided to the consumers in the group. If we specify 0 instead the consumer group will consume all the messages in the stream history to start with. 
+    true, //mkstream true, creates the stream if it doesn't exist
+  );
+};
 
 const handleGetRoot = async (request) => {
   return new Response(`Hello from ...`);
@@ -52,27 +58,12 @@ const handlePostGrade = async (request) => {
   };
 
   // Send submission to Redis stream
-  // Submission needs to include all information (assignment number, user, code, testCode)
-  // When grader has processed an item from the queue, it should call an API endpoint of programming-api that updates the database entry of the code
-  // How to update the UI? --> look at hint with submission ID
   await redis.xadd(
     "grading-stream",
     "*", // let redis assign message ID
     { user: submission.user, assignmentNumber: submission.assignmentNumber, code: submission.code, testCode: testCode },
   );
 
-  /*const response = await fetch("http://grader-api:7000/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  const responseJSON = await response.json();
-  const evaluatedGraderFeedback = evaluateGraderFeedback(responseJSON.result);
-
-  await programmingSubmissionsService.gradeSubmission(submission.assignmentNumber, submission.code, submission.user, "processed", responseJSON.result, evaluatedGraderFeedback[0]);
-  */
   const feedbackData = {
     correct: false,
     errorType: "Placeholder error type",
@@ -101,69 +92,6 @@ const handlePostSubmissionUpdate = async (request) => {
     feedback: "returned successfully",
   };
   return Response.json(data);
-};
-
-const handlePostRedis = async (request) => {
-  const searchParams = await request.json();
-  console.log("Parameters to update stream with: ", searchParams);
-
-  /*await redis.del(
-    "somestream",
-  );*/
-  /*await redis.xgroupDestroy(
-    "somestream",
-    "Redis-Consumer-Group-1",
-  );
-
-  await redis.xgroupCreate(
-    "somestream",
-    "Redis-Consumer-Group-1",
-    0,
-    true, //mkstream true, creates the stream if it doesn't exist
-  );*/
-
-  await redis.xadd(
-    "somestream",
-    "*", // let redis assign message ID
-    { method: "The method", parameter: searchParams.parameter },
-  );
-  await redis.xadd(
-    "somestream",
-    "*", // let redis assign message ID
-    { method: "The method", parameter: searchParams.parameter+1 },
-  );
-
-  let lengthOfStream = await redis.xlen("somestream");
-  console.log(lengthOfStream)
-
-  await redis.xack(
-    "somestream",
-    "Redis-Consumer-Group-1",
-    1686047415604,
-  );
-
-  const [streamFromGroup] = await redis.xreadgroup(
-    [{ key: "somestream", xid: ">" }],
-    { group: "Redis-Consumer-Group-1", consumer: "TestConsumer", count: 1 },
-  );
-  console.log("Reading from consumer group: ", streamFromGroup);
-
-  const [streamFromGroup2] = await redis.xreadgroup(
-    [{ key: "somestream", xid: ">" }],
-    { group: "Redis-Consumer-Group-1", consumer: "TestConsumer-2", count: 1 },
-  );
-  console.log("Reading from consumer group 2: ", streamFromGroup2);
-
-
-  const [stream] = await redis.xread(
-    [{ key: "somestream", xid: 0 }], // read from beginning
-    { block: 5000 },
-  );
-  const msgFV = stream.messages[0].fieldValues;
-  console.log("Redis Test Stream Output: ", msgFV);
-  //console.log("Redis full stream output: ", stream)
-
-  return new Response("Test message");
 };
 
 const urlMapping = [
@@ -197,11 +125,6 @@ const urlMapping = [
     pattern: new URLPattern({ pathname: "/submission-update" }),
     fn: handlePostSubmissionUpdate,
   },
-  {
-    method: "POST",
-    pattern: new URLPattern({ pathname: "/redis" }),
-    fn: handlePostRedis,
-  }
 ];
 
 const handleRequest = async (request) => {
