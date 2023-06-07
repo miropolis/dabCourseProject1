@@ -39,16 +39,19 @@ const handlePostGrade = async (request) => {
     if (oldUserSubmissions[i].code === submission.code) {
       console.log("Same assignment found!");
       const feedbackData = {
+        id: oldUserSubmissions[i].id,
         correct: oldUserSubmissions[i].correct,
-        errorType: evaluateGraderFeedback(oldUserSubmissions[i].grader_feedback)[1],
+        errorType: evaluateGraderFeedback(oldUserSubmissions[i].grader_feedback)[1], // TODO calling graderFeedback here let to a bug when the oldUserSubmission did not have grader_feedback yet (NULL). When a user can only have 1 pending submission this should not be a problem
         graderFeedback: oldUserSubmissions[i].grader_feedback,
+        alreadyGraded: true,
       };
       return Response.json(feedbackData);
     };
   };
 
   //put this statement before the for block to write all submissions (even duplicates) to database
-  await programmingSubmissionsService.writeSubmission(submission.assignmentNumber, submission.code, submission.user);
+  const submissionID = await programmingSubmissionsService.writeSubmission(submission.assignmentNumber, submission.code, submission.user);
+  console.log(submissionID);
 
   const programmingAssignments = await programmingAssignmentService.findAll();
   const testCode = programmingAssignments[submission.assignmentNumber-1]["test_code"];
@@ -65,9 +68,11 @@ const handlePostGrade = async (request) => {
   );
 
   const feedbackData = {
+    id: submissionID[0].id,
     correct: false,
-    errorType: "Placeholder error type",
+    errorType: "Placeholder error typee",
     graderFeedback: "Placeholder graderFeedback",
+    alreadyGraded: false,
   };
   
   return Response.json(feedbackData);
@@ -90,6 +95,28 @@ const handlePostSubmissionUpdate = async (request) => {
   programmingSubmissionsService.gradeSubmission(updatedSubmission.assignmentNumber, updatedSubmission.code, updatedSubmission.user, "processed", updatedSubmission.graderFeedback, evaluatedGraderFeedback[0]);
   const data = {
     feedback: "returned successfully",
+  };
+  return Response.json(data);
+};
+
+const handlePostSubmissionStatus = async (request) => {
+  const searchParams = await request.json();
+  let submission = await programmingSubmissionsService.findByID(searchParams.id);
+  console.log("HandlePostSubmissionStatus: ", submission);
+  console.log("HandlePostSubmissionStatus: ", submission[0].status);
+  let i = 1;
+  while (submission[0].status != "processed") {
+    console.log("still waiting for submission to be graded ", i);
+    i++;
+    submission = await programmingSubmissionsService.findByID(searchParams.id);
+    await new Promise(r => setTimeout(r, 500));
+  }
+  const evaluatedGraderFeedback = evaluateGraderFeedback(submission[0].grader_feedback);
+  const data = {
+    id: submission[0].id,
+    correct: submission[0].correct,
+    errorType: evaluatedGraderFeedback[1],
+    graderFeedback: submission[0].grader_feedback,
   };
   return Response.json(data);
 };
@@ -124,6 +151,11 @@ const urlMapping = [
     method: "POST",
     pattern: new URLPattern({ pathname: "/submission-update" }),
     fn: handlePostSubmissionUpdate,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/submission-status" }),
+    fn: handlePostSubmissionStatus,
   },
 ];
 
