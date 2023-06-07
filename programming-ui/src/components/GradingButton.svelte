@@ -49,7 +49,6 @@
       return
     }
 
-    console.log("Submission Data: ", submissionData)
     submissionEvent = true;
 
     // Get Grading

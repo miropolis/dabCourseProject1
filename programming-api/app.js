@@ -37,7 +37,6 @@ const handlePostGrade = async (request) => {
 
   for (let i = 0; i < oldUserSubmissions.length; i++) {
     if (oldUserSubmissions[i].code === submission.code) {
-      console.log("Same assignment found!");
       const feedbackData = {
         id: oldUserSubmissions[i].id,
         correct: oldUserSubmissions[i].correct,
@@ -51,7 +50,6 @@ const handlePostGrade = async (request) => {
 
   //put this statement before the for block to write all submissions (even duplicates) to database
   const submissionID = await programmingSubmissionsService.writeSubmission(submission.assignmentNumber, submission.code, submission.user);
-  console.log(submissionID);
 
   const programmingAssignments = await programmingAssignmentService.findAll();
   const testCode = programmingAssignments[submission.assignmentNumber-1]["test_code"];
@@ -80,7 +78,6 @@ const handlePostGrade = async (request) => {
 
 const handlePostSubmissions = async (request) => {
   const searchParams = await request.json();
-  console.log("handlePostSubmissions called with params: ", searchParams)
   return Response.json(await programmingSubmissionsService.findByUuidAndAssignmentID(searchParams.user, searchParams.assignmentNumber));
 }
 
@@ -102,11 +99,8 @@ const handlePostSubmissionUpdate = async (request) => {
 const handlePostSubmissionStatus = async (request) => {
   const searchParams = await request.json();
   let submission = await programmingSubmissionsService.findByID(searchParams.id);
-  console.log("HandlePostSubmissionStatus: ", submission);
-  console.log("HandlePostSubmissionStatus: ", submission[0].status);
   let i = 1;
   while (submission[0].status != "processed") {
-    console.log("still waiting for submission to be graded ", i);
     i++;
     submission = await programmingSubmissionsService.findByID(searchParams.id);
     await new Promise(r => setTimeout(r, 500));

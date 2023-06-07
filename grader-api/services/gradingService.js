@@ -82,7 +82,7 @@ const grade = async (code, testCode) => {
   );
   const result = await runGradingContainer(graderContainerName, randomKey);
   // TODO remove timeout eventually 
-  await new Promise(r => setTimeout(r, 5000));
+  //await new Promise(r => setTimeout(r, 5000));
   return result;
 };
 

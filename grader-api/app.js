@@ -9,23 +9,19 @@ const redis = await connect({
   hostname: "redis",
   port: 6379,
 });
-console.log(redis);
 
 // On startup start consumer
 // TODO implement wake up functionality upon submission through GradingButton, which starts the consumer for a certain amount of time
 while(true) {
-  console.log("Still trsue");
 
   const [gradingMessageStream] = await redis.xreadgroup(
     [{ key: "grading-stream", xid: ">" }],
     { group: "Redis-Grader-Group", consumer: "Grading-Consumer", count: 1 }, // TODO can consumers have the same name? otherwise find solution for multiple deployments
   );
   if (gradingMessageStream) {
-    console.log("Reading from consumer group: ", gradingMessageStream.messages[0].xid.unixMs);
     const code = gradingMessageStream.messages[0].fieldValues.code
     const testCode = gradingMessageStream.messages[0].fieldValues.testCode
     const result = await grade(code, testCode);
-    console.log("Result: ", result);
 
     const data = {
       user: gradingMessageStream.messages[0].fieldValues.user,
@@ -51,7 +47,7 @@ while(true) {
   };
   
 
-  await new Promise(r => setTimeout(r, 4000));
+  await new Promise(r => setTimeout(r, 500));
 };
 
 const handleRequest = async (request) => {
