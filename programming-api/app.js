@@ -17,6 +17,10 @@ const handleGetAssignments = async (request) => {
   return Response.json(programmingAssignments);
 };
 
+const handleGetHighestAssignment = async (request) => {
+  return Response.json(await programmingAssignmentService.findHighestAssignment());
+};
+
 const handlePostGrade = async (request) => {
   const submission = await request.json();
   const oldUserSubmissions = await programmingSubmissionsService.findByUuidAndAssignmentID(submission.user, submission.assignmentNumber);
@@ -105,7 +109,7 @@ const handlePostSubmissionsCorrect = async (request) => {
   const searchParams = await request.json();
   const answerString = "User uuid back to you: " + searchParams.user;
   const data = {user: answerString};
-  return Response.json(await programmingSubmissionsService.findByUuidAndCorrect(searchParams.user));
+  return Response.json(await programmingSubmissionsService.findMaxAssignmentNumberByUuidAndCorrect(searchParams.user));
 };
 
 const urlMapping = [
@@ -113,6 +117,11 @@ const urlMapping = [
     method: "GET",
     pattern: new URLPattern({ pathname: "/assignments" }),
     fn: handleGetAssignments,
+  },
+  {
+    method: "GET",
+    pattern: new URLPattern({ pathname: "/highest-assignment" }),
+    fn: handleGetHighestAssignment,
   },
   {
     method: "GET",

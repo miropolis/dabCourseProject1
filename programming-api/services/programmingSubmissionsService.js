@@ -28,8 +28,9 @@ const findByID = async (id) => {
   return await sql`SELECT * FROM programming_assignment_submissions WHERE id = ${id}`;
 };
 
-const findByUuidAndCorrect = async (uuid) => {
-  return await sql`SELECT * FROM programming_assignment_submissions WHERE user_uuid = ${uuid} AND correct = TRUE;`;
+const findMaxAssignmentNumberByUuidAndCorrect = async (uuid) => {
+  //return await sql`SELECT * FROM programming_assignment_submissions WHERE user_uuid = ${uuid} AND correct = TRUE;`;
+  return await sql`SELECT MAX(programming_assignment_id) AS max_assignment_id FROM programming_assignment_submissions WHERE user_uuid = ${uuid} AND correct = TRUE;`;
 };
 
-export { findAll, writeSubmission, findByUuid, findByUuidAndAssignmentID, gradeSubmission, findByUuidAndPending, findByID, findByUuidAndCorrect };
+export { findAll, writeSubmission, findByUuid, findByUuidAndAssignmentID, gradeSubmission, findByUuidAndPending, findByID, findMaxAssignmentNumberByUuidAndCorrect };
