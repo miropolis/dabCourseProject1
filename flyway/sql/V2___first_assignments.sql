@@ -42,3 +42,20 @@ class TestHello(unittest.TestCase):
   def test_sum_2(self):
     self.assertEqual(sum(40, 2), 42, "Call sum(40, 2) should return 42.")
 ');
+
+INSERT INTO programming_assignments (title, assignment_order, handout, test_code) VALUES ('Product', 4, 'Write a function "product" that takes two numbers as parameters and returns their product.', 'import socket
+def guard(*args, **kwargs):
+  raise Exception("Internet is bad for you :|")
+socket.socket = guard
+
+import unittest
+from code import *
+
+class TestHello(unittest.TestCase):
+
+  def test_product_1(self):
+    self.assertEqual(product(2, 4), 8, "Call product(2, 4) should return 8.")
+
+  def test_product_2(self):
+    self.assertEqual(product(40, 2), 80, "Call product(40, 2) should return 80.")
+');
