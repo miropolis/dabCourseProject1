@@ -7,6 +7,7 @@ import ProgrammingSubmissions from "../components/ProgrammingSubmissions.svelte"
 export function getStaticPaths() {
   //TODO: dynamic for more assignments?
   return [
+    {params: {assignment: 'assignment-1'}},
     {params: {assignment: 'assignment-2'}},
     {params: {assignment: 'assignment-3'}},
   ];
@@ -16,8 +17,8 @@ const { assignment } = Astro.params;
 const assignmentNumber = parseInt(assignment.slice(-1))
 ---
 <Layout>
-    <ProgrammingAssignment assignmentID={assignmentNumber} client:load />
-    <GradingButton assignmentID={assignmentNumber} client:only={"svelte"} />
-    <ProgrammingSubmissions assignmentID={assignmentNumber} client:load />
-  </Layout>
+  <ProgrammingAssignment assignmentID={assignmentNumber} client:load />
+  <GradingButton assignmentID={assignmentNumber} client:only={"svelte"} />
+  <ProgrammingSubmissions assignmentID={assignmentNumber} client:load />
+</Layout>
   
