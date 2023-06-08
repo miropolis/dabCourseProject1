@@ -4,6 +4,16 @@ import GradingButton from "../components/GradingButton.svelte";
 import ProgrammingAssignment from "../components/ProgrammingAssignment.svelte";
 import ProgrammingSubmissions from "../components/ProgrammingSubmissions.svelte";
 
+//Sample code for request to retrieve pages to build
+/*const data = {user: user};
+const response = await fetch("http://programming-api:7777/submissions-correct", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+});*/
+
 export function getStaticPaths() {
   //TODO: dynamic for more assignments?
   return [

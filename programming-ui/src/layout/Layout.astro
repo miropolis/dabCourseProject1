@@ -1,6 +1,6 @@
 ---
 import Header from "./Header.svelte";
-import Sidebar from "./Sidebar.astro";
+import Sidebar from "./Sidebar.svelte";
 ---
 
 <html lang="en">
@@ -17,7 +17,7 @@ import Sidebar from "./Sidebar.astro";
       <div class="flex flex-row">
         <div class="bg-gray-50 basis-1/6">
           <!-- This is the sidebar! -->
-          <Sidebar />
+          <Sidebar client:only={"svelte"}/>
         </div>
         <div class="basis-5/6 pl-20 pr-20 mr-40">
           <!-- This is the main page! -->

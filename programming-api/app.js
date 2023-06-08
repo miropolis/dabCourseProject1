@@ -115,6 +115,13 @@ const handlePostSubmissionStatus = async (request) => {
   return Response.json(data);
 };
 
+const handlePostSubmissionsCorrect = async (request) => {
+  const searchParams = await request.json();
+  const answerString = "User uuid back to you: " + searchParams.user;
+  const data = {user: answerString};
+  return Response.json(await programmingSubmissionsService.findByUuidAndCorrect(searchParams.user));
+};
+
 const urlMapping = [
   {
     method: "GET",
@@ -150,6 +157,11 @@ const urlMapping = [
     method: "POST",
     pattern: new URLPattern({ pathname: "/submission-status" }),
     fn: handlePostSubmissionStatus,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/submissions-correct" }),
+    fn: handlePostSubmissionsCorrect,
   },
 ];
 
