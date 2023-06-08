@@ -1,5 +1,5 @@
 <script>
-  import { userUuid } from "../stores/stores.js";
+  import { userUuid, points } from "../stores/stores.js";
   export let assignmentID = 1;
   let userCode = "";
   let submissionEvent = false;
@@ -55,6 +55,12 @@
     gradingResult = await getGrading(submissionData.id);
     submissionEvent = false;
     submissionGraded = true;
+
+    // TODO when this happens, reload sidebar and header
+    if (gradingResult.correct) {
+      console.log("Grading Result was correct!");
+      $points = $points + 100;
+    };
 
   };
 
