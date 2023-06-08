@@ -2,13 +2,24 @@ import { serve } from "./deps.js";
 import { grade } from "./services/gradingService.js";
 import { connect } from "./deps.js";
 
-// TODO fix the redis connect import on startup, sometimes does not download (cache it?)
-// THEN try to run 2 deployments
-
 const redis = await connect({
   hostname: "redis",
   port: 6379,
 });
+
+// Create Redis Consumer Group and stream on startup (if it doesn't exist yet)
+try {
+  const redisInfo = await redis.xinfoGroups("grading-stream");
+  console.log(redisInfo[0].name);
+} catch (e) {
+  console.log("Looks like grading-stream does not exist yet. Creating it and the consumer group now...");
+  await redis.xgroupCreate(
+    "grading-stream",
+    "Redis-Grader-Group",
+    0, //what message to serve next at the first consumer connecting, that is, what was the last message ID when the group was just created. If we provide $ as we did, then only new messages arriving in the stream from now on will be provided to the consumers in the group. If we specify 0 instead the consumer group will consume all the messages in the stream history to start with. 
+    true, //mkstream true, creates the stream if it doesn't exist
+  );
+};
 
 // On startup start consumer
 // TODO implement wake up functionality upon submission through GradingButton, which starts the consumer for a certain amount of time
@@ -16,7 +27,7 @@ while(true) {
 
   const [gradingMessageStream] = await redis.xreadgroup(
     [{ key: "grading-stream", xid: ">" }],
-    { group: "Redis-Grader-Group", consumer: "Grading-Consumer", count: 1 }, // TODO can consumers have the same name? otherwise find solution for multiple deployments
+    { group: "Redis-Grader-Group", consumer: "Grading-Consumer", count: 1 },
   );
   if (gradingMessageStream) {
     const code = gradingMessageStream.messages[0].fieldValues.code

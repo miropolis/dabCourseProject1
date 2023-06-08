@@ -54,7 +54,6 @@ services:
       - 7000
     depends_on:
       - redis
-      - programming-api
     deploy:
       replicas: 2
 
