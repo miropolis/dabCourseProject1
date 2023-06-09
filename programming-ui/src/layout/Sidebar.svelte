@@ -32,13 +32,16 @@ const getSidebarContent = async () => {
 
 let sidebarPromise = getSidebarContent();
 </script>
-
+<nav>
 {#await sidebarPromise}
+<div class="text-2xl font-semibold pt-4">
 Loading assignments
+</div>
 {:then sidebar}
-    <div class="text-lg font-semibold">
+    <div class="text-2xl font-semibold pt-3">
         {#each {length: ($points/100+1 > highestAssignmentJSON[0].count ? highestAssignmentJSON[0].count : $points/100+1)} as _, i}
-            <a class={currentPath === "/assignment-" + (i+1) + "/" ? "text-yellow-600 font-bold" : ""} href={"/assignment-" + (i+1) + "/"}><p class="hover:bg-gray-200 pl-2 pb-0.5">Assignment {i+1}</p></a>
+            <a class={currentPath === "/assignment-" + (i+1) + "/" ? "text-yellow-600 font-bold" : ""} href={"/assignment-" + (i+1) + "/"}><p class="hover:bg-gray-200 pl-4 pb-1">Assignment {i+1}</p></a>
         {/each}
     </div>
 {/await}
+</nav>
