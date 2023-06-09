@@ -20,6 +20,7 @@
     let submissionsPromise = getSubmissions();
 </script>
 
+<p class="text-xl">Past Submissions:</p>
 {#await submissionsPromise}
 <p>Loading Programming Submissions</p>
 {:then submissions}

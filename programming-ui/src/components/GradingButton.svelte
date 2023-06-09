@@ -1,5 +1,5 @@
 <script>
-  import { userUuid, points } from "../stores/stores.js";
+  import { userUuid, points, highestAssignment } from "../stores/stores.js";
   export let assignmentID = 1;
   let userCode = "";
   let submissionEvent = false;
@@ -79,9 +79,9 @@
     return jsonResponse;
   };
 </script>
-<textarea bind:value={userCode} class="w-full bg-gray-900 text-white font-mono p-2.5 h-48 border-4 border-black focus:border-4 focus:border-blue-500" placeholder="Write your Python code here..."></textarea>
+<textarea bind:value={userCode} class="w-full bg-gray-900 text-white font-mono p-2.5 h-48 border-4 border-black focus:border-4 focus:border-yellow-600" placeholder="Write your Python code here..."></textarea>
 <button
-  class="bg-gray-600 hover:bg-gray-900 text-white font-bold p-4 m-4"
+  class="bg-yellow-600 hover:bg-gray-900 text-white font-bold p-4 m-4"
   on:click={submitAssignmentCode}
 >
   Submit for grading
@@ -97,7 +97,11 @@
   {#if gradingResult.correct}
   <div class="bg-green-600 p-2">
     <p>Your submission was successful!</p>
-    <p><a href="/assignment-{assignmentID+1}/">Go to the next assignment</a></p>
+    {#if $highestAssignment >= assignmentID +1}
+      <p><a href="/assignment-{assignmentID+1}/">Go to the next assignment</a></p>
+    {:else}
+      <p>Congratulations! You finished all assignments.</p>
+    {/if}
   </div>
   {:else}
   <div class="bg-red-500 p-2">
