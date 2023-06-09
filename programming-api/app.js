@@ -1,5 +1,6 @@
 import * as programmingAssignmentService from "./services/programmingAssignmentService.js";
 import * as programmingSubmissionsService from "./services/programmingSubmissionsService.js";
+import { cacheMethodCalls } from "./util/cacheUtil.js";
 import { serve } from "./deps.js";
 import { connect } from "./deps.js";
 
@@ -8,22 +9,25 @@ const redis = await connect({
   port: 6379,
 });
 
+const cachedProgrammingAssignmentService = cacheMethodCalls(programmingAssignmentService, []);
+const cachedProgrammingSubmissionsService = cacheMethodCalls(programmingSubmissionsService, ["writeSubmission", "gradeSubmission"]);
+
 const handleGetRoot = async (request) => {
   return new Response(`Hello from ...`);
 };
 
 const handleGetAssignments = async (request) => {
-  const programmingAssignments = await programmingAssignmentService.findAll();
+  const programmingAssignments = await cachedProgrammingAssignmentService.findAll();
   return Response.json(programmingAssignments);
 };
 
 const handleGetHighestAssignment = async (request) => {
-  return Response.json(await programmingAssignmentService.findHighestAssignment());
+  return Response.json(await cachedProgrammingAssignmentService.findHighestAssignment());
 };
 
 const handlePostGrade = async (request) => {
   const submission = await request.json();
-  const oldUserSubmissions = await programmingSubmissionsService.findByUuidAndAssignmentID(submission.user, submission.assignmentNumber);
+  const oldUserSubmissions = await cachedProgrammingSubmissionsService.findByUuidAndAssignmentID(submission.user, submission.assignmentNumber);
 
   for (let i = 0; i < oldUserSubmissions.length; i++) {
     if (oldUserSubmissions[i].code === submission.code) {
@@ -39,7 +43,7 @@ const handlePostGrade = async (request) => {
   };
 
   //put this statement before the for block to write all submissions (even duplicates) to database
-  const submissionID = await programmingSubmissionsService.writeSubmission(submission.assignmentNumber, submission.code, submission.user);
+  const submissionID = await cachedProgrammingSubmissionsService.writeSubmission(submission.assignmentNumber, submission.code, submission.user);
 
   const programmingAssignments = await programmingAssignmentService.findAll();
   const testCode = programmingAssignments[submission.assignmentNumber-1]["test_code"];
@@ -68,32 +72,32 @@ const handlePostGrade = async (request) => {
 
 const handlePostSubmissions = async (request) => {
   const searchParams = await request.json();
-  return Response.json(await programmingSubmissionsService.findByUuidAndAssignmentID(searchParams.user, searchParams.assignmentNumber));
+  return Response.json(await cachedProgrammingSubmissionsService.findByUuidAndAssignmentID(searchParams.user, searchParams.assignmentNumber));
 }
 
 const handlePostSubmissionsPending = async (request) => {
   const searchParams = await request.json();
-  return Response.json(await programmingSubmissionsService.findByUuidAndPending(searchParams.user));
+  return Response.json(await cachedProgrammingSubmissionsService.findByUuidAndPending(searchParams.user));
 };
 
 const handlePostSubmissionUpdate = async (request) => {
   const updatedSubmission = await request.json();
   const evaluatedGraderFeedback = evaluateGraderFeedback(updatedSubmission.graderFeedback);
-  programmingSubmissionsService.gradeSubmission(updatedSubmission.assignmentNumber, updatedSubmission.code, updatedSubmission.user, "processed", updatedSubmission.graderFeedback, evaluatedGraderFeedback[0]);
+  cachedProgrammingSubmissionsService.gradeSubmission(updatedSubmission.assignmentNumber, updatedSubmission.code, updatedSubmission.user, "processed", updatedSubmission.graderFeedback, evaluatedGraderFeedback[0]);
   const data = {
     feedback: "returned successfully",
   };
   return Response.json(data);
 };
 
-const handlePostSubmissionStatus = async (request) => {
+const handlePostSubmissionStatus = async (request) => { // TODO can the DB calls here be cached? probably not
   const searchParams = await request.json();
-  let submission = await programmingSubmissionsService.findByID(searchParams.id);
+  let submission = await cachedProgrammingSubmissionsService.findByID(searchParams.id);
   let i = 1;
   while (submission[0].status != "processed") {
     i++;
-    submission = await programmingSubmissionsService.findByID(searchParams.id);
-    await new Promise(r => setTimeout(r, 500));
+    submission = await cachedProgrammingSubmissionsService.findByID(searchParams.id);
+    await new Promise(r => setTimeout(r, 100));
   }
   const evaluatedGraderFeedback = evaluateGraderFeedback(submission[0].grader_feedback);
   const data = {
@@ -109,7 +113,7 @@ const handlePostSubmissionsCorrect = async (request) => {
   const searchParams = await request.json();
   const answerString = "User uuid back to you: " + searchParams.user;
   const data = {user: answerString};
-  return Response.json(await programmingSubmissionsService.findMaxAssignmentNumberByUuidAndCorrect(searchParams.user));
+  return Response.json(await cachedProgrammingSubmissionsService.findMaxAssignmentNumberByUuidAndCorrect(searchParams.user));
 };
 
 const urlMapping = [
