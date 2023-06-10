@@ -27,7 +27,7 @@
 {#if submissions.length == 0}
     <p>No programming submissions available</p>
 {:else}
-    {#each submissions as submission}
+    {#each [...submissions].reverse() as submission}
         <div class="mb-4">
             <p>ID: {submission.id}</p>
             <p>Assignment ID: {submission.programming_assignment_id}</p>
