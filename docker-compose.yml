@@ -89,5 +89,6 @@ services:
     network_mode: host
     depends_on:
       - nginx
+      - grader-api
     volumes:
       - ./e2e-playwright/tests:/e2e-playwright/tests
