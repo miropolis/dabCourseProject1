@@ -80,7 +80,7 @@
 </script>
 <textarea bind:value={userCode} class="w-full bg-gray-900 text-white font-mono p-2.5 h-48 border-4 border-black focus:border-4 focus:border-yellow-600" placeholder="Write your Python code here..."></textarea>
 <button
-  class="bg-yellow-600 hover:bg-yellow-900 text-white font-bold p-4 mt-4 mb-20"
+  class="bg-yellow-600 hover:bg-yellow-900 text-white font-bold p-4 mt-4 mb-8"
   on:click={submitAssignmentCode}
 >
   Submit for grading
