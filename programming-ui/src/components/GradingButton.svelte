@@ -106,7 +106,7 @@
   <div class="bg-red-500 p-2">
     <p>Your submission was not successful!</p>
     <p class="pb-2">ID: {gradingResult.id}</p>
-    <p class="pb-2">Error Typee: {gradingResult.errorType}</p>
+    <p class="pb-2">Error Type: {gradingResult.errorType}</p>
     <p class="bg-gray-900 text-white p-2 font-mono">{gradingResult.graderFeedback}</p>
    </div>
   {/if}
