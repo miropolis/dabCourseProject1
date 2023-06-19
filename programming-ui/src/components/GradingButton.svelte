@@ -10,9 +10,9 @@
   const submitAssignmentCode = async () => {
     submissionGraded = false;
     const data = {
-    user: $userUuid,
-    assignmentNumber: assignmentID,
-    code: userCode,
+      user: $userUuid,
+      assignmentNumber: assignmentID,
+      code: userCode,
     };
 
     // check if user has pending submissions. Tried integrating this into the grading API endpoint but timing did not work
