@@ -5,14 +5,20 @@ import ProgrammingAssignment from "../components/ProgrammingAssignment.svelte";
 import ProgrammingSubmissions from "../components/ProgrammingSubmissions.svelte";
 
 export async function getStaticPaths() {
-  const response = await fetch("http:/programming-api:7777/highest-assignment");
+  /*const response = await fetch("http:/programming-api:7777/highest-assignment");
   const highestAssignmentJSON = await response.json();
   let pagesArray = []
   for (let i=1; i<=highestAssignmentJSON[0].count; i++) {
     pagesArray.push({params: {assignment: 'assignment-'+i}});
   };
   
-  return pagesArray;
+  return pagesArray;*/
+  return [
+    { params: { assignment: 'assignment-1' } },
+    { params: { assignment: 'assignment-2' } },
+    { params: { assignment: 'assignment-3' } },
+    { params: { assignment: 'assignment-4' } },
+  ]
 }
 
 const { assignment } = Astro.params;

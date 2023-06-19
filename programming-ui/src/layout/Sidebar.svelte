@@ -3,7 +3,6 @@ import { userUuid, points, highestAssignment } from "../stores/stores.js";
 import { onMount } from 'svelte';
 let currentPath = ``;
 onMount(() => currentPath = window.location.pathname);
-let assignmentsToShow = 1;
 let highestAssignmentJSON;
 
 const getSidebarContent = async () => {
@@ -22,10 +21,6 @@ const getSidebarContent = async () => {
     $highestAssignment = highestAssignmentJSON[0].count;
     if(responseJSON[0].max_assignment_id) {
         $points = responseJSON[0].max_assignment_id*100;
-        assignmentsToShow = responseJSON[0].max_assignment_id + 1;
-        if (assignmentsToShow > highestAssignmentJSON[0].count) {
-            assignmentsToShow = highestAssignmentJSON[0].count;
-        };
     };
     return responseJSON;
 };
