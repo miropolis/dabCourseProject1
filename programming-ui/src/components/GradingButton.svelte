@@ -57,7 +57,6 @@
     submissionGraded = true;
 
     if (gradingResult.correct) {
-      console.log("Grading Result was correct!");
       $points = $points + 100;
     };
 
