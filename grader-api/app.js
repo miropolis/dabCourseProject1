@@ -22,7 +22,6 @@ try {
 };
 
 // On startup start consumer
-// TODO implement wake up functionality upon submission through GradingButton, which starts the consumer for a certain amount of time
 while(true) {
 
   const [gradingMessageStream] = await redis.xreadgroup(
@@ -48,7 +47,6 @@ while(true) {
         body: JSON.stringify(data),
       });
       const jsonResponse = await responseFromProgrammingAPI.json();
-      console.log(jsonResponse);
 
     await redis.xack(
       "grading-stream",

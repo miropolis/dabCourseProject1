@@ -7,12 +7,9 @@ import ProgrammingSubmissions from "../components/ProgrammingSubmissions.svelte"
 export async function getStaticPaths() {
   const response = await fetch("http:/programming-api:7777/highest-assignment");
   const highestAssignmentJSON = await response.json();
-  console.log("Highest Assignment from [assignment].astro: ", highestAssignmentJSON[0].count)
   let pagesArray = []
   for (let i=1; i<=highestAssignmentJSON[0].count; i++) {
-    console.log(i)
     pagesArray.push({params: {assignment: 'assignment-'+i}});
-    console.log(pagesArray)
   };
   
   return pagesArray;

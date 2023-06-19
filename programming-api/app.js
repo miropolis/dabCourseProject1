@@ -34,7 +34,7 @@ const handlePostGrade = async (request) => {
       const feedbackData = {
         id: oldUserSubmissions[i].id,
         correct: oldUserSubmissions[i].correct,
-        errorType: evaluateGraderFeedback(oldUserSubmissions[i].grader_feedback)[1], // TODO calling graderFeedback here let to a bug when the oldUserSubmission did not have grader_feedback yet (NULL). When a user can only have 1 pending submission this should not be a problem
+        errorType: evaluateGraderFeedback(oldUserSubmissions[i].grader_feedback)[1],
         graderFeedback: oldUserSubmissions[i].grader_feedback,
         alreadyGraded: true,
       };
@@ -90,7 +90,7 @@ const handlePostSubmissionUpdate = async (request) => {
   return Response.json(data);
 };
 
-const handlePostSubmissionStatus = async (request) => { // TODO can the DB calls here be cached? probably not
+const handlePostSubmissionStatus = async (request) => {
   const searchParams = await request.json();
   let submission = await cachedProgrammingSubmissionsService.findByID(searchParams.id);
   let i = 1;
