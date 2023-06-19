@@ -4,8 +4,7 @@ TODO: The RUNNING.md briefly outlines steps needed to run the application.
 
 First build the grader-image
 
-    cd grader-image
-    bash ./build.sh
+    cd grader-image && bash ./build.sh && cd ..
 
 # Run development environment
 
