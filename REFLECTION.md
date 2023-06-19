@@ -1,5 +1,3 @@
-TODO: There is a brief description of the application in REFLECTION.md that highlights the key design decisions for the application. The document also contains a reflection of possible improvements that should be done to improve the performance of the application.
-
 # Key design decisions
 
 ## UI design
@@ -40,3 +38,5 @@ The past submissions are also not updated on pressing the submission button but 
 ## Implementation of grader-api
 
 I was wondering if it would be better to have some kind of "wake-up" functionality for the Redis Consumers in grader-api/app.js instead of the while(true) loop which checks the Redis Stream in short intervals. E.g., there could be a wake-up functionality which would be called by the programming-api upon receiving a submission and keeping the consumer listening for 5 minutes or until there are no more submissions in the Redis Stream. Then, the 2 grader-api deployments would not always need to be listening.
+
+I would appreciate any feedback on these considerations!
