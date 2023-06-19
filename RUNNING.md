@@ -7,6 +7,14 @@ First build the grader-image
     cd grader-image
     bash ./build.sh
 
+# Run development environment
+
+    docker compose up
+
+# Run production environment
+
+    docker compose -f docker-compose.prod.yml up -d
+
 
 # Run the tests in folder e2e-playwright
 
